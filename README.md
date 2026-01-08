@@ -1,6 +1,6 @@
-# 🗺️ Heatmap Backend - API Bolivia
+# 🗺️ Heatmap Backend - APICecasem
 
-API REST simple para datos policiales de Bolivia con NestJS + PostgreSQL.
+API REST Cecasem 
 
 ## 🚀 Cómo correr el proyecto
 
