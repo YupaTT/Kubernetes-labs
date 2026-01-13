@@ -16,6 +16,7 @@ Hands-on Kubernetes labs that run on a local [kind](https://kind.sigs.k8s.io/) c
 |---|-----|--------|
 | 00 | [setup](00-setup/) | 3-node kind cluster (1 control plane + 2 workers) |
 | 01 | [pods](01-pods/) | Pods, image pull errors, `describe` / `logs` / `exec` |
+| 02 | [replicasets-deployments](02-replicasets-deployments/) | Self-healing and scaling with ReplicaSets |
 
 ## Quick start
 
@@ -52,6 +53,16 @@ kubectl get pod broken-nginx          # ErrImagePull / ImagePullBackOff
 kubectl describe pod broken-nginx     # read the Events section
 
 kubectl delete -f 01-pods/
+```
+
+## 02 · ReplicaSets
+
+```bash
+kubectl apply -f 02-replicasets-deployments/replicaset.yaml
+kubectl get rs,pods
+kubectl delete pod <one-of-the-pods>  # the ReplicaSet recreates it
+kubectl scale rs nginx-rs --replicas=5
+kubectl delete -f 02-replicasets-deployments/replicaset.yaml
 ```
 
 ## Clean up
