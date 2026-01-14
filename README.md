@@ -16,7 +16,7 @@ Hands-on Kubernetes labs that run on a local [kind](https://kind.sigs.k8s.io/) c
 |---|-----|--------|
 | 00 | [setup](00-setup/) | 3-node kind cluster (1 control plane + 2 workers) |
 | 01 | [pods](01-pods/) | Pods, image pull errors, `describe` / `logs` / `exec` |
-| 02 | [replicasets-deployments](02-replicasets-deployments/) | Self-healing and scaling with ReplicaSets |
+| 02 | [replicasets-deployments](02-replicasets-deployments/) | Self-healing, scaling, rolling updates, rollbacks |
 
 ## Quick start
 
@@ -55,15 +55,25 @@ kubectl describe pod broken-nginx     # read the Events section
 kubectl delete -f 01-pods/
 ```
 
-## 02 · ReplicaSets
+## 02 · ReplicaSets & Deployments
 
 ```bash
 kubectl apply -f 02-replicasets-deployments/replicaset.yaml
 kubectl get rs,pods
 kubectl delete pod <one-of-the-pods>  # the ReplicaSet recreates it
-kubectl scale rs nginx-rs --replicas=5
 kubectl delete -f 02-replicasets-deployments/replicaset.yaml
+
+kubectl apply -f 02-replicasets-deployments/deployment.yaml
+kubectl scale deployment nginx-deployment --replicas=4
+kubectl set image deployment/nginx-deployment nginx=nginx:1.29
+kubectl rollout status deployment/nginx-deployment
+kubectl rollout history deployment/nginx-deployment
+kubectl rollout undo deployment/nginx-deployment
+
+kubectl delete -f 02-replicasets-deployments/
 ```
+
+> Apply the ReplicaSet and the Deployment one at a time: they select the same `app: nginx` label.
 
 ## Clean up
 
