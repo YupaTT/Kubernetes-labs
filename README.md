@@ -17,6 +17,7 @@ Hands-on Kubernetes labs that run on a local [kind](https://kind.sigs.k8s.io/) c
 | 00 | [setup](00-setup/) | 3-node kind cluster (1 control plane + 2 workers) |
 | 01 | [pods](01-pods/) | Pods, image pull errors, `describe` / `logs` / `exec` |
 | 02 | [replicasets-deployments](02-replicasets-deployments/) | Self-healing, scaling, rolling updates, rollbacks |
+| 03 | [services](03-services/) | ClusterIP, label selectors, in-cluster DNS |
 
 ## Quick start
 
@@ -26,7 +27,7 @@ kubectl cluster-info --context kind-k8s-lab
 kubectl get nodes
 ```
 
-Clean up each lab before starting the next one:
+Several labs reuse names and labels (`app: nginx`, `app: backend`), so **clean up each lab before starting the next one**:
 
 ```bash
 kubectl delete -f <lab-folder>/
@@ -74,6 +75,20 @@ kubectl delete -f 02-replicasets-deployments/
 ```
 
 > Apply the ReplicaSet and the Deployment one at a time: they select the same `app: nginx` label.
+
+## 03 · Services
+
+```bash
+kubectl apply -f 03-services/
+kubectl get svc,endpointslices
+kubectl run client --rm -it --image=curlimages/curl --restart=Never -- \
+  sh -c 'for i in 1 2 3 4 5; do curl -s backend-service | grep Hostname; done'
+kubectl port-forward svc/backend-service 8080:80   # then: curl localhost:8080
+
+kubectl delete -f 03-services/
+```
+
+Each request lands on a different Pod: the Service load-balances across all Pods matching `app: backend`.
 
 ## Clean up
 
