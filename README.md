@@ -9,6 +9,7 @@ Hands-on Kubernetes labs that run on a local [kind](https://kind.sigs.k8s.io/) c
 | [Docker](https://docs.docker.com/get-docker/) | Runs the kind nodes as containers |
 | [kind](https://kind.sigs.k8s.io/docs/user/quick-start/#installation) | Local multi-node cluster |
 | [kubectl](https://kubernetes.io/docs/tasks/tools/) | Talks to the cluster |
+| [Go](https://go.dev/dl/) 1.24+ | Demo app and its tests (lab 04) |
 
 ## Labs
 
