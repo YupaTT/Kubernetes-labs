@@ -18,6 +18,7 @@ Hands-on Kubernetes labs that run on a local [kind](https://kind.sigs.k8s.io/) c
 | 01 | [pods](01-pods/) | Pods, image pull errors, `describe` / `logs` / `exec` |
 | 02 | [replicasets-deployments](02-replicasets-deployments/) | Self-healing, scaling, rolling updates, rollbacks |
 | 03 | [services](03-services/) | ClusterIP, label selectors, in-cluster DNS |
+| 04 | [configmaps-secrets](04-configmaps-secrets/) | Storing config and credentials in the cluster |
 
 ## Quick start
 
@@ -89,6 +90,17 @@ kubectl delete -f 03-services/
 ```
 
 Each request lands on a different Pod: the Service load-balances across all Pods matching `app: backend`.
+
+## 04 · ConfigMaps & Secrets
+
+```bash
+kubectl apply -f 04-configmaps-secrets/configmap.yaml -f 04-configmaps-secrets/secret.yaml
+kubectl describe configmap backend-config
+kubectl get secret database-secret -o yaml
+kubectl get secret database-secret -o jsonpath='{.data.DB_USERNAME}' | base64 -d
+```
+
+> Secrets are base64-encoded, **not encrypted**. Never commit real credentials.
 
 ## Clean up
 
