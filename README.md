@@ -19,7 +19,7 @@ Hands-on Kubernetes labs that run on a local [kind](https://kind.sigs.k8s.io/) c
 | 01 | [pods](01-pods/) | Pods, image pull errors, `describe` / `logs` / `exec` |
 | 02 | [replicasets-deployments](02-replicasets-deployments/) | Self-healing, scaling, rolling updates, rollbacks |
 | 03 | [services](03-services/) | ClusterIP, label selectors, in-cluster DNS |
-| 04 | [configmaps-secrets](04-configmaps-secrets/) | Storing config and credentials in the cluster |
+| 04 | [configmaps-secrets](04-configmaps-secrets/) | Injecting config and credentials as env vars (Go demo app) |
 
 ## Quick start
 
@@ -94,12 +94,25 @@ Each request lands on a different Pod: the Service load-balances across all Pods
 
 ## 04 · ConfigMaps & Secrets
 
+The [demo app](04-configmaps-secrets/app/) is a small Go HTTP server that returns its configuration as JSON (never the password) and exposes `/healthz`.
+
 ```bash
-kubectl apply -f 04-configmaps-secrets/configmap.yaml -f 04-configmaps-secrets/secret.yaml
-kubectl describe configmap backend-config
-kubectl get secret database-secret -o yaml
+(cd 04-configmaps-secrets/app && go test ./...)
+docker build -t config-demo:local 04-configmaps-secrets/app
+kind load docker-image config-demo:local --name k8s-lab
+
+kubectl apply -f 04-configmaps-secrets/
+kubectl rollout status deployment/config-demo
+kubectl port-forward deploy/config-demo 8080:8080
+curl localhost:8080
+# {"app_env":"development","log_level":"debug","api_url":"http://api.example.com","db_username":"CHANGE_ME_USERNAME","db_password_set":true}
+
 kubectl get secret database-secret -o jsonpath='{.data.DB_USERNAME}' | base64 -d
+
+kubectl delete -f 04-configmaps-secrets/
 ```
+
+Change a value in `configmap.yaml`, re-apply it and run `kubectl rollout restart deployment/config-demo`: env vars are only read when the container starts.
 
 > Secrets are base64-encoded, **not encrypted**. Never commit real credentials.
 
