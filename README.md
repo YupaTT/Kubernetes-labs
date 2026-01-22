@@ -20,6 +20,7 @@ Hands-on Kubernetes labs that run on a local [kind](https://kind.sigs.k8s.io/) c
 | 02 | [replicasets-deployments](02-replicasets-deployments/) | Self-healing, scaling, rolling updates, rollbacks |
 | 03 | [services](03-services/) | ClusterIP, label selectors, in-cluster DNS |
 | 04 | [configmaps-secrets](04-configmaps-secrets/) | Injecting config and credentials as env vars (Go demo app) |
+| 05 | [storage](05-storage/) | `emptyDir`, PersistentVolumeClaims, dynamic provisioning |
 
 ## Quick start
 
@@ -115,6 +116,22 @@ kubectl delete -f 04-configmaps-secrets/
 Change a value in `configmap.yaml`, re-apply it and run `kubectl rollout restart deployment/config-demo`: env vars are only read when the container starts.
 
 > Secrets are base64-encoded, **not encrypted**. Never commit real credentials.
+
+## 05 · Storage
+
+```bash
+kubectl apply -f 05-storage/pod.yaml
+kubectl exec volume-demo -- sh -c 'echo hello > /data/file && cat /data/file'
+kubectl delete pod volume-demo       # emptyDir data is gone with the Pod
+
+kubectl apply -f 05-storage/pvc.yaml -f 05-storage/deployment.yaml
+kubectl get pvc,pv                   # kind's local-path provisioner creates the PV
+kubectl exec deploy/storage-demo -- sh -c 'echo persisted > /data/file'
+kubectl rollout restart deployment/storage-demo
+kubectl exec deploy/storage-demo -- cat /data/file   # still there
+
+kubectl delete -f 05-storage/
+```
 
 ## Clean up
 
