@@ -21,6 +21,7 @@ Hands-on Kubernetes labs that run on a local [kind](https://kind.sigs.k8s.io/) c
 | 03 | [services](03-services/) | ClusterIP, label selectors, in-cluster DNS |
 | 04 | [configmaps-secrets](04-configmaps-secrets/) | Injecting config and credentials as env vars (Go demo app) |
 | 05 | [storage](05-storage/) | `emptyDir`, PersistentVolumeClaims, dynamic provisioning |
+| 06 | [statefulsets](06-statefulsets/) | Stable identities, headless Services, per-replica volumes |
 
 ## Quick start
 
@@ -131,6 +132,23 @@ kubectl rollout restart deployment/storage-demo
 kubectl exec deploy/storage-demo -- cat /data/file   # still there
 
 kubectl delete -f 05-storage/
+```
+
+## 06 · StatefulSets
+
+```bash
+kubectl apply -f 06-statefulsets/
+kubectl get pods -w                  # web-0, web-1, web-2 created in order
+kubectl get pvc                      # one PVC per replica: www-web-0, www-web-1, ...
+
+kubectl exec web-0 -- sh -c 'echo web-0 > /usr/share/nginx/html/index.html'
+kubectl delete pod web-0             # comes back with the same name and volume
+kubectl exec web-0 -- cat /usr/share/nginx/html/index.html
+
+kubectl run client --rm -it --image=busybox:1.36 --restart=Never -- nslookup web-0.nginx
+
+kubectl delete -f 06-statefulsets/
+kubectl delete pvc -l app=nginx      # PVCs are kept on purpose; delete them by hand
 ```
 
 ## Clean up
