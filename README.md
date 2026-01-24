@@ -22,6 +22,7 @@ Hands-on Kubernetes labs that run on a local [kind](https://kind.sigs.k8s.io/) c
 | 04 | [configmaps-secrets](04-configmaps-secrets/) | Injecting config and credentials as env vars (Go demo app) |
 | 05 | [storage](05-storage/) | `emptyDir`, PersistentVolumeClaims, dynamic provisioning |
 | 06 | [statefulsets](06-statefulsets/) | Stable identities, headless Services, per-replica volumes |
+| 07 | [ingress](07-ingress/) | ingress-nginx on kind |
 
 ## Quick start
 
@@ -30,6 +31,8 @@ kind create cluster --name k8s-lab --config 00-setup/cluster.yaml
 kubectl cluster-info --context kind-k8s-lab
 kubectl get nodes
 ```
+
+Labs 01 to 06 share this cluster. Lab 07 creates its own cluster because it needs host ports 80/443.
 
 Several labs reuse names and labels (`app: nginx`, `app: backend`), so **clean up each lab before starting the next one**:
 
@@ -151,8 +154,21 @@ kubectl delete -f 06-statefulsets/
 kubectl delete pvc -l app=nginx      # PVCs are kept on purpose; delete them by hand
 ```
 
+## 07 · Ingress
+
+This lab uses its own cluster with ports 80/443 mapped to the control-plane node:
+
+```bash
+kind create cluster --name ingress --config 07-ingress/cluster.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.15.1/deploy/static/provider/kind/deploy.yaml
+kubectl -n ingress-nginx patch deployment ingress-nginx-controller \
+  -p '{"spec":{"template":{"spec":{"nodeSelector":{"ingress-ready":"true"}}}}}'
+kubectl apply -f 07-ingress/applications.yaml
+```
+
 ## Clean up
 
 ```bash
 kind delete cluster --name k8s-lab
+kind delete cluster --name ingress
 ```
