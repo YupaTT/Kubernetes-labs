@@ -10,6 +10,7 @@ Hands-on Kubernetes labs that run on a local [kind](https://kind.sigs.k8s.io/) c
 | [kind](https://kind.sigs.k8s.io/docs/user/quick-start/#installation) | Local multi-node cluster |
 | [kubectl](https://kubernetes.io/docs/tasks/tools/) | Talks to the cluster |
 | [Go](https://go.dev/dl/) 1.24+ | Demo app and its tests (lab 04) |
+| `curl`, `openssl` | Testing Ingress, TLS certificates |
 
 ## Labs
 
@@ -22,7 +23,7 @@ Hands-on Kubernetes labs that run on a local [kind](https://kind.sigs.k8s.io/) c
 | 04 | [configmaps-secrets](04-configmaps-secrets/) | Injecting config and credentials as env vars (Go demo app) |
 | 05 | [storage](05-storage/) | `emptyDir`, PersistentVolumeClaims, dynamic provisioning |
 | 06 | [statefulsets](06-statefulsets/) | Stable identities, headless Services, per-replica volumes |
-| 07 | [ingress](07-ingress/) | ingress-nginx, path/host routing |
+| 07 | [ingress](07-ingress/) | ingress-nginx, path/host routing, TLS |
 
 ## Quick start
 
@@ -167,6 +168,8 @@ kubectl apply -f 07-ingress/applications.yaml
 kubectl apply -f 07-ingress/ingress.yaml
 curl http://localhost/       # frontend
 curl http://localhost/api    # backend
+07-ingress/generate-cert.sh
+kubectl apply -f 07-ingress/ingress-tls.yaml
 ```
 
 ## Clean up
