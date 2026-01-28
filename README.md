@@ -23,7 +23,7 @@ Hands-on Kubernetes labs that run on a local [kind](https://kind.sigs.k8s.io/) c
 | 04 | [configmaps-secrets](04-configmaps-secrets/) | Injecting config and credentials as env vars (Go demo app) |
 | 05 | [storage](05-storage/) | `emptyDir`, PersistentVolumeClaims, dynamic provisioning |
 | 06 | [statefulsets](06-statefulsets/) | Stable identities, headless Services, per-replica volumes |
-| 07 | [ingress](07-ingress/) | ingress-nginx, path/host routing, TLS |
+| 07 | [ingress](07-ingress/) | ingress-nginx, path/host routing, TLS. Has its own [README](07-ingress/README.md) |
 
 ## Quick start
 
@@ -157,19 +157,11 @@ kubectl delete pvc -l app=nginx      # PVCs are kept on purpose; delete them by 
 
 ## 07 · Ingress
 
-This lab uses its own cluster with ports 80/443 mapped to the control-plane node:
+Follow [07-ingress/README.md](07-ingress/README.md). It uses its own cluster:
 
 ```bash
+kind delete cluster --name k8s-lab   # optional, frees resources
 kind create cluster --name ingress --config 07-ingress/cluster.yaml
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.15.1/deploy/static/provider/kind/deploy.yaml
-kubectl -n ingress-nginx patch deployment ingress-nginx-controller \
-  -p '{"spec":{"template":{"spec":{"nodeSelector":{"ingress-ready":"true"}}}}}'
-kubectl apply -f 07-ingress/applications.yaml
-kubectl apply -f 07-ingress/ingress.yaml
-curl http://localhost/       # frontend
-curl http://localhost/api    # backend
-07-ingress/generate-cert.sh
-kubectl apply -f 07-ingress/ingress-tls.yaml
 ```
 
 ## Clean up
