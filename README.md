@@ -10,7 +10,7 @@ Hands-on Kubernetes labs that run on a local [kind](https://kind.sigs.k8s.io/) c
 | [kind](https://kind.sigs.k8s.io/docs/user/quick-start/#installation) | Local multi-node cluster |
 | [kubectl](https://kubernetes.io/docs/tasks/tools/) | Talks to the cluster |
 | [Go](https://go.dev/dl/) 1.24+ | Demo app and its tests (lab 04) |
-| `curl`, `openssl` | Testing Ingress, TLS certificates |
+| `make`, `curl`, `openssl` | Helpers, testing Ingress, TLS certificates |
 
 ## Labs
 
@@ -28,7 +28,7 @@ Hands-on Kubernetes labs that run on a local [kind](https://kind.sigs.k8s.io/) c
 ## Quick start
 
 ```bash
-kind create cluster --name k8s-lab --config 00-setup/cluster.yaml
+make cluster                       # kind create cluster --name k8s-lab
 kubectl cluster-info --context kind-k8s-lab
 kubectl get nodes
 ```
@@ -44,7 +44,7 @@ kubectl delete -f <lab-folder>/
 ## 00 · Setup
 
 ```bash
-kind create cluster --name k8s-lab --config 00-setup/cluster.yaml
+make cluster
 kubectl get nodes -o wide
 ```
 
@@ -103,9 +103,8 @@ Each request lands on a different Pod: the Service load-balances across all Pods
 The [demo app](04-configmaps-secrets/app/) is a small Go HTTP server that returns its configuration as JSON (never the password) and exposes `/healthz`.
 
 ```bash
-(cd 04-configmaps-secrets/app && go test ./...)
-docker build -t config-demo:local 04-configmaps-secrets/app
-kind load docker-image config-demo:local --name k8s-lab
+make test         # go vet + go test
+make load-image   # docker build + kind load docker-image config-demo:local
 
 kubectl apply -f 04-configmaps-secrets/
 kubectl rollout status deployment/config-demo
@@ -160,13 +159,13 @@ kubectl delete pvc -l app=nginx      # PVCs are kept on purpose; delete them by 
 Follow [07-ingress/README.md](07-ingress/README.md). It uses its own cluster:
 
 ```bash
-kind delete cluster --name k8s-lab   # optional, frees resources
+make delete-cluster   # optional, frees resources
 kind create cluster --name ingress --config 07-ingress/cluster.yaml
 ```
 
 ## Clean up
 
 ```bash
-kind delete cluster --name k8s-lab
+make delete-cluster
 kind delete cluster --name ingress
 ```
