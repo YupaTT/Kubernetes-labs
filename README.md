@@ -169,3 +169,14 @@ kind create cluster --name ingress --config 07-ingress/cluster.yaml
 make delete-cluster
 kind delete cluster --name ingress
 ```
+
+## Repository layout
+
+```
+.
+├── 00-setup/                    kind cluster definition
+├── 01-pods/ … 06-statefulsets/  one folder per lab
+├── 04-configmaps-secrets/app/   Go demo app + tests + Dockerfile
+├── 07-ingress/                  Ingress lab with its own README and cluster
+└── Makefile                     cluster, test, image helpers
+```
